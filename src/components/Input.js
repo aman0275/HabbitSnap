@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
-import { COLORS } from '../constants/colors';
+import { useColors } from '../utils/colors';
 import { BORDER_RADIUS, SPACING } from '../constants/theme';
 import { TYPOGRAPHY } from '../constants/theme';
 
@@ -16,24 +16,28 @@ const Input = ({
   dark = false,
   ...props
 }) => {
+  const COLORS = useColors();
+  const styles = createStyles(COLORS);
+  
   const inputStyles = [
     styles.input,
     dark && styles.inputDark,
     multiline && styles.textArea,
     error && styles.inputError,
+    style,
   ];
 
   const labelStyles = [styles.label, dark && styles.labelDark];
 
   return (
-    <View style={[styles.container, style]}>
+    <View style={styles.container}>
       {label && <Text style={labelStyles}>{label}</Text>}
       <TextInput
         style={inputStyles}
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor={dark ? COLORS.textTertiary : COLORS.textTertiary}
+        placeholderTextColor={COLORS.textTertiary}
         multiline={multiline}
         numberOfLines={numberOfLines}
         textAlignVertical={multiline ? 'top' : 'center'}
@@ -44,7 +48,7 @@ const Input = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS) => StyleSheet.create({
   container: {
     marginBottom: SPACING.xl,
   },
@@ -64,12 +68,12 @@ const styles = StyleSheet.create({
     borderColor: COLORS.border,
   },
   inputDark: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    color: COLORS.white,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: COLORS.surface,
+    color: COLORS.textPrimary,
+    borderColor: COLORS.border,
   },
   labelDark: {
-    color: COLORS.white,
+    color: COLORS.textPrimary,
   },
   textArea: {
     minHeight: 100,

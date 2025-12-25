@@ -17,9 +17,12 @@ export const habitService = {
     const enrichedHabits = await Promise.all(
       habits.map(async (habit) => {
         const habitEntries = entries.filter((e) => e.habitId === habit.id);
-        const latestEntry = habitEntries.sort(
-          (a, b) => new Date(b.date) - new Date(a.date)
-        )[0];
+        // Sort by timestamp or createdAt (most recent first)
+        const latestEntry = habitEntries.sort((a, b) => {
+          const timeA = a.timestamp || (a.createdAt ? new Date(a.createdAt).getTime() : 0);
+          const timeB = b.timestamp || (b.createdAt ? new Date(b.createdAt).getTime() : 0);
+          return timeB - timeA;
+        })[0];
 
         const streak = calculateStreak(habitEntries);
 

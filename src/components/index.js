@@ -14,3 +14,5 @@ export { default as HabitHeader } from './HabitHeader';
 export { default as PhotoGridItem } from './PhotoGridItem';
 export { default as AICategoryBadge } from './AICategoryBadge';
 export { default as AIInsightsCard } from './AIInsightsCard';
+export { default as StatCard } from './StatCard';
+export * from './charts';

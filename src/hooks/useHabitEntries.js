@@ -44,12 +44,12 @@ export const useHabitEntries = (habitId) => {
     }
   }, [habitId, loadEntries]);
 
-  const deleteEntry = useCallback(async (date) => {
+  const deleteEntry = useCallback(async (entryId) => {
     if (!habitId) return false;
 
     try {
       setError(null);
-      await entryService.deleteEntry(habitId, date);
+      await entryService.deleteEntry(habitId, entryId);
       await loadEntries();
       return true;
     } catch (err) {

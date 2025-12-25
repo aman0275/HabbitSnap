@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   View,
   StyleSheet,
@@ -6,36 +6,84 @@ import {
   Platform,
   ScrollView,
   Alert,
-} from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { habitService } from '../services/habitService';
-import { generateId } from '../utils/helpers';
-import { HABIT_COLORS } from '../constants/colors';
-import { ALERTS } from '../constants/messages';
-import { validators } from '../utils/validation';
-import Input from '../components/Input';
-import ColorPicker from '../components/ColorPicker';
-import Button from '../components/Button';
-import { COLORS } from '../constants/colors';
-import { SPACING, BORDER_RADIUS, SHADOWS } from '../constants/theme';
+} from "react-native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { habitService } from "../services/habitService";
+import { useHabits } from "../hooks/useHabits";
+import { generateId } from "../utils/helpers";
+import { HABIT_COLORS } from "../constants/colors";
+import { ALERTS } from "../constants/messages";
+import { validators } from "../utils/validation";
+import Input from "../components/Input";
+import ColorPicker from "../components/ColorPicker";
+import Button from "../components/Button";
+import HabitSuggestionsList from "../components/HabitSuggestionsList";
+import { useColors } from "../utils/colors";
+import { SPACING, BORDER_RADIUS, SHADOWS } from "../constants/theme";
+
+const createStyles = (COLORS) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: COLORS.background,
+    },
+    scrollView: {
+      flex: 1,
+    },
+    scrollContent: {
+      padding: SPACING.lg,
+      paddingBottom: SPACING.xxxl,
+    },
+    form: {
+      backgroundColor: COLORS.surface,
+      borderRadius: BORDER_RADIUS.lg,
+      padding: SPACING.xl,
+      marginBottom: SPACING.xl,
+      ...SHADOWS.md,
+    },
+    saveButton: {
+      ...SHADOWS.primary,
+    },
+  });
 
 export default function AddHabitScreen() {
   const navigation = useNavigation();
   const route = useRoute();
+  const COLORS = useColors();
+  const styles = createStyles(COLORS);
   const editingHabit = route.params?.habit;
-  
-  const [name, setName] = useState(editingHabit?.name || '');
-  const [description, setDescription] = useState(editingHabit?.description || '');
+  const { habits } = useHabits();
+  const isEditing = !!editingHabit;
+
+  const [name, setName] = useState(editingHabit?.name || "");
+  const [description, setDescription] = useState(
+    editingHabit?.description || ""
+  );
   const [selectedColor, setSelectedColor] = useState(
     editingHabit?.color || HABIT_COLORS[0].color
   );
   const [nameError, setNameError] = useState(null);
+  const [showSuggestions, setShowSuggestions] = useState(!isEditing);
+
+  const handleSelectSuggestion = (suggestion) => {
+    setName(suggestion.name);
+    if (suggestion.description) {
+      setDescription(suggestion.description);
+    }
+    if (suggestion.color) {
+      setSelectedColor(suggestion.color);
+    }
+    setShowSuggestions(false);
+  };
 
   const handleSave = async () => {
     const nameValidationError = validators.habitName(name);
     if (nameValidationError) {
       setNameError(nameValidationError);
-      Alert.alert(ALERTS.VALIDATION.HABIT_NAME_REQUIRED.title, nameValidationError);
+      Alert.alert(
+        ALERTS.VALIDATION.HABIT_NAME_REQUIRED.title,
+        nameValidationError
+      );
       return;
     }
 
@@ -56,21 +104,30 @@ export default function AddHabitScreen() {
       }
       navigation.goBack();
     } catch (error) {
-      Alert.alert('Error', 'Failed to save habit. Please try again.');
-      console.error('Error saving habit:', error);
+      Alert.alert("Error", "Failed to save habit. Please try again.");
+      console.error("Error saving habit:", error);
     }
   };
 
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
+        {/* Show suggestions only when creating new habit, not editing */}
+        {!isEditing && showSuggestions && (
+          <HabitSuggestionsList
+            existingHabits={habits}
+            onSelectSuggestion={handleSelectSuggestion}
+            onDismiss={() => setShowSuggestions(false)}
+          />
+        )}
+
         <View style={styles.form}>
           <Input
             label="Habit Name *"
@@ -100,7 +157,7 @@ export default function AddHabitScreen() {
         </View>
 
         <Button
-          title={editingHabit ? 'Update Habit' : 'Create Habit'}
+          title={editingHabit ? "Update Habit" : "Create Habit"}
           onPress={handleSave}
           variant="gradient"
           colors={[selectedColor, selectedColor]}
@@ -110,28 +167,3 @@ export default function AddHabitScreen() {
     </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: SPACING.lg,
-    paddingBottom: SPACING.xxxl,
-  },
-  form: {
-    backgroundColor: COLORS.white,
-    borderRadius: BORDER_RADIUS.lg,
-    padding: SPACING.xl,
-    marginBottom: SPACING.xl,
-    ...SHADOWS.md,
-  },
-  saveButton: {
-    ...SHADOWS.primary,
-  },
-});
-

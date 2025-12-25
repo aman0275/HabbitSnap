@@ -9,6 +9,12 @@
  * - TagGenerator: Tag generation
  * - SuggestionGenerator: Smart suggestions
  * - QualityAssessor: Photo quality assessment
+ * - PatternAnalyzer: Pattern detection (time of day, day of week)
+ * - PredictiveAnalyzer: Predictive analytics and streak risk assessment
+ * - TrendAnalyzer: Advanced trend analysis with comparisons
+ * - HabitStrengthAnalyzer: Habit strength scoring
+ * - AchievementRecognizer: Enhanced milestone detection
+ * - MotivationalInsights: Personalized motivational messages
  */
 
 import classifier from './classifier';
@@ -17,6 +23,12 @@ import progressAnalyzer from './progressAnalyzer';
 import tagGenerator from './tagGenerator';
 import suggestionGenerator from './suggestionGenerator';
 import qualityAssessor from './qualityAssessor';
+import patternAnalyzer from './patternAnalyzer';
+import predictiveAnalyzer from './predictiveAnalyzer';
+import trendAnalyzer from './trendAnalyzer';
+import habitStrengthAnalyzer from './habitStrengthAnalyzer';
+import achievementRecognizer from './achievementRecognizer';
+import motivationalInsights from './motivationalInsights';
 
 /**
  * Unified AI Service Interface
@@ -68,6 +80,52 @@ export const aiService = {
    * @returns {Promise<Object>} Quality assessment
    */
   assessPhotoQuality: (imageUri) => qualityAssessor.assess(imageUri),
+
+  /**
+   * Analyze tracking patterns
+   * @param {Array} entries - Habit entries
+   * @returns {Promise<Object>} Pattern analysis
+   */
+  analyzePatterns: (entries) => patternAnalyzer.analyze(entries),
+
+  /**
+   * Predictive analysis and streak risk assessment
+   * @param {Array} entries - Habit entries
+   * @param {Object} habit - Habit object
+   * @returns {Promise<Object>} Predictive analysis
+   */
+  analyzePredictions: (entries, habit) =>
+    predictiveAnalyzer.analyze(entries, habit),
+
+  /**
+   * Analyze trends with advanced comparisons
+   * @param {Array} entries - Habit entries
+   * @returns {Promise<Object>} Trend analysis
+   */
+  analyzeTrends: (entries) => trendAnalyzer.analyze(entries),
+
+  /**
+   * Analyze habit strength
+   * @param {Array} entries - Habit entries
+   * @returns {Promise<Object>} Habit strength analysis
+   */
+  analyzeHabitStrength: (entries) => habitStrengthAnalyzer.analyze(entries),
+
+  /**
+   * Recognize achievements and milestones
+   * @param {Array} entries - Habit entries
+   * @returns {Promise<Object>} Achievement recognition
+   */
+  recognizeAchievements: (entries) => achievementRecognizer.recognize(entries),
+
+  /**
+   * Generate motivational insights
+   * @param {Array} entries - Habit entries
+   * @param {Object} habit - Habit object
+   * @returns {Promise<Object>} Motivational insights
+   */
+  getMotivationalInsights: (entries, habit) =>
+    motivationalInsights.generate(entries, habit),
 };
 
 // Export individual services for advanced usage
@@ -78,5 +136,11 @@ export {
   tagGenerator,
   suggestionGenerator,
   qualityAssessor,
+  patternAnalyzer,
+  predictiveAnalyzer,
+  trendAnalyzer,
+  habitStrengthAnalyzer,
+  achievementRecognizer,
+  motivationalInsights,
 };
 

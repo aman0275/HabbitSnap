@@ -17,7 +17,17 @@ export default function HabitDetailScreen() {
   const route = useRoute();
   const { habit } = route.params;
   const { entries, streak, deleteEntry } = useHabitEntries(habit.id);
-  const { consistency, progress, suggestions } = useAIInsights(habit, entries);
+  const {
+    consistency,
+    progress,
+    suggestions,
+    patterns,
+    predictions,
+    trends,
+    habitStrength,
+    achievements,
+    motivation,
+  } = useAIInsights(habit, entries);
 
   const handleCapturePhoto = () => {
     navigation.navigate('Camera', { habit });
@@ -32,7 +42,7 @@ export default function HabitDetailScreen() {
         {
           text: ALERTS.DELETE_ENTRY.confirm,
           style: 'destructive',
-          onPress: () => deleteEntry(entry.date),
+          onPress: () => deleteEntry(entry.id || entry.date), // Support both old and new format
         },
       ]
     );
@@ -63,15 +73,29 @@ export default function HabitDetailScreen() {
           <FlatList
             data={entries}
             renderItem={renderPhotoItem}
-            keyExtractor={(item, index) => `${item.date}-${index}`}
+            keyExtractor={(item) => item.id || `${item.date}-${item.createdAt}`}
             numColumns={3}
             ListHeaderComponent={() => (
-              (consistency || progress || (suggestions && suggestions.length > 0)) ? (
+              (consistency ||
+                progress ||
+                (suggestions && suggestions.length > 0) ||
+                patterns ||
+                predictions ||
+                trends ||
+                habitStrength ||
+                achievements ||
+                motivation) ? (
                 <View style={styles.insightsContainer}>
                   <AIInsightsCard
                     consistency={consistency}
                     progress={progress}
                     suggestions={suggestions}
+                    patterns={patterns}
+                    predictions={predictions}
+                    trends={trends}
+                    habitStrength={habitStrength}
+                    achievements={achievements}
+                    motivation={motivation}
                   />
                 </View>
               ) : null

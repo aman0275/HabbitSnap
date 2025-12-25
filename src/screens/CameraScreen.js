@@ -15,8 +15,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { entryService } from '../services/entryService';
 import { ALERTS, PERMISSIONS, ERRORS } from '../constants/messages';
-import { COLORS } from '../constants/colors';
-import { SPACING, BORDER_RADIUS } from '../constants/theme';
+import { useColors } from '../utils/colors';
+import { SPACING, BORDER_RADIUS, SHADOWS } from '../constants/theme';
 import Button from '../components/Button';
 import Input from '../components/Input';
 
@@ -24,6 +24,8 @@ export default function CameraScreen() {
   const navigation = useNavigation();
   const route = useRoute();
   const { habit } = route.params;
+  const COLORS = useColors();
+  const styles = createStyles(COLORS);
   
   const [permission, requestPermission] = useCameraPermissions();
   const [facing, setFacing] = useState('back');
@@ -137,20 +139,24 @@ export default function CameraScreen() {
           
           <View style={styles.previewControls}>
             <TouchableOpacity
-              style={styles.controlButton}
+              style={styles.retakeButton}
               onPress={handleRetake}
+              activeOpacity={0.7}
             >
-              <Ionicons name="refresh" size={24} color={COLORS.white} />
-              <Text style={styles.controlButtonText}>Retake</Text>
+              <View style={styles.retakeButtonInner}>
+                <Ionicons name="refresh" size={22} color={COLORS.textPrimary} />
+                <Text style={styles.retakeButtonText}>Retake</Text>
+              </View>
             </TouchableOpacity>
 
-            <Button
-              title="Save"
+            <TouchableOpacity
+              style={[styles.saveButton, { backgroundColor: habit.color || COLORS.primary }]}
               onPress={handleSave}
-              variant="gradient"
-              colors={[habit.color || COLORS.primary, habit.color || COLORS.primaryLight]}
-              icon={() => <Ionicons name="checkmark" size={24} color={COLORS.white} />}
-            />
+              activeOpacity={0.8}
+            >
+              <Ionicons name="checkmark-circle" size={24} color={COLORS.textWhite} />
+              <Text style={styles.saveButtonText}>Save</Text>
+            </TouchableOpacity>
           </View>
 
           <View style={styles.noteContainer}>
@@ -161,7 +167,7 @@ export default function CameraScreen() {
               placeholder="How did it go?"
               multiline
               numberOfLines={3}
-              dark
+              style={styles.noteInput}
             />
           </View>
         </View>
@@ -219,7 +225,7 @@ export default function CameraScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (COLORS) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',
@@ -316,6 +322,7 @@ const styles = StyleSheet.create({
   previewContainer: {
     flex: 1,
     width: '100%',
+    backgroundColor: '#000',
   },
   preview: {
     flex: 1,
@@ -323,26 +330,59 @@ const styles = StyleSheet.create({
   },
   previewControls: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    padding: 20,
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-  },
-  controlButton: {
+    justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 12,
+    padding: SPACING.lg,
+    backgroundColor: COLORS.surface,
+    ...SHADOWS.md,
   },
-  controlButtonText: {
-    color: '#fff',
-    marginTop: 4,
-    fontSize: 14,
+  retakeButton: {
+    flex: 1,
+    marginRight: SPACING.md,
+  },
+  retakeButtonInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.background,
+    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.lg,
+    borderRadius: BORDER_RADIUS.lg,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  retakeButtonText: {
+    marginLeft: SPACING.sm,
+    fontSize: 16,
+    fontWeight: '600',
+    color: COLORS.textPrimary,
+  },
+  saveButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.lg,
+    borderRadius: BORDER_RADIUS.lg,
+    ...SHADOWS.md,
+  },
+  saveButtonText: {
+    marginLeft: SPACING.sm,
+    fontSize: 16,
+    fontWeight: '600',
+    color: COLORS.textWhite,
   },
   noteContainer: {
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    backgroundColor: COLORS.surface,
     padding: SPACING.xl,
+  },
+  noteInput: {
+    backgroundColor: COLORS.background,
   },
   message: {
     fontSize: 18,
-    color: COLORS.white,
+    color: COLORS.textPrimary,
     marginTop: SPACING.xl,
     textAlign: 'center',
   },
@@ -355,7 +395,7 @@ const styles = StyleSheet.create({
   },
   permissionContainer: {
     flex: 1,
-    backgroundColor: COLORS.black,
+    backgroundColor: COLORS.background,
     justifyContent: 'center',
     alignItems: 'center',
     padding: SPACING.xxxl,
