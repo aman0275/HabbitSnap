@@ -16,6 +16,7 @@ const RootStack = createStackNavigator();
 function HomeStack() {
   return (
     <Stack.Navigator
+      initialRouteName="Habits"
       screenOptions={{
         headerStyle: {
           backgroundColor: "#667EEA",
@@ -34,6 +35,7 @@ function HomeStack() {
         component={HomeScreen}
         options={{
           title: "My Habits",
+          headerShown: false,
         }}
       />
       <Stack.Screen
@@ -41,6 +43,7 @@ function HomeStack() {
         component={HabitDetailScreen}
         options={{
           title: "Habit Details",
+          headerShown: true,
         }}
       />
       <Stack.Screen
@@ -117,18 +120,7 @@ export default function AppNavigator() {
         component={AddHabitScreen}
         options={{
           presentation: "modal",
-          headerShown: true,
-          headerStyle: {
-            backgroundColor: "#667EEA",
-            elevation: 0,
-            shadowOpacity: 0,
-          },
-          headerTintColor: "#fff",
-          headerTitleStyle: {
-            fontWeight: "700",
-            fontSize: 18,
-          },
-          title: "New Habit",
+          headerShown: false,
         }}
       />
     </RootStack.Navigator>

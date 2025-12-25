@@ -1,11 +1,13 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '../constants/colors';
 import { SPACING } from '../constants/theme';
 import { TYPOGRAPHY } from '../constants/theme';
 
 const HabitHeader = ({ habit, streak, totalEntries }) => {
+  const insets = useSafeAreaInsets();
   const StatBox = ({ icon, value, label }) => (
     <View style={styles.statBox}>
       <Ionicons name={icon} size={24} color={COLORS.white} />
@@ -14,8 +16,16 @@ const HabitHeader = ({ habit, streak, totalEntries }) => {
     </View>
   );
 
+  const headerStyle = [
+    styles.header,
+    { 
+      backgroundColor: habit.color || COLORS.primary,
+      paddingTop: insets.top + SPACING.xl,
+    }
+  ];
+
   return (
-    <View style={[styles.header, { backgroundColor: habit.color || COLORS.primary }]}>
+    <View style={headerStyle}>
       <View style={styles.headerContent}>
         <Text style={styles.habitName}>{habit.name}</Text>
         {habit.description && (
@@ -32,7 +42,7 @@ const HabitHeader = ({ habit, streak, totalEntries }) => {
 
 const styles = StyleSheet.create({
   header: {
-    paddingTop: 20,
+    paddingTop: SPACING.xl,
     paddingBottom: SPACING.xxxl,
     paddingHorizontal: SPACING.xl,
   },

@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   View,
   Text,
@@ -7,18 +7,24 @@ import {
   RefreshControl,
   TouchableOpacity,
   Animated,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
-import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import { useDashboard } from '../hooks/useDashboard';
-import { useColors } from '../utils/colors';
-import { TYPOGRAPHY, SHADOWS, BORDER_RADIUS, SPACING } from '../constants/theme';
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { CommonActions, StackActions } from "@react-navigation/native";
+import { useDashboard } from "../hooks/useDashboard";
+import { useColors } from "../utils/colors";
+import {
+  TYPOGRAPHY,
+  SHADOWS,
+  BORDER_RADIUS,
+  SPACING,
+} from "../constants/theme";
 import { LineChart, BarChart, PieChart } from "../components/charts";
 import StatCard from "../components/StatCard";
 import DashboardAICard from "../components/DashboardAICard";
-import AnimatedView from '../components/AnimatedView';
+import AnimatedView from "../components/AnimatedView";
+import GradientHeader from "../components/GradientHeader";
 
 /**
  * Dashboard Screen
@@ -40,30 +46,6 @@ export default function DashboardScreen() {
     loading,
     refresh,
   } = useDashboard();
-
-  const renderHeader = () => (
-    <AnimatedView delay={0}>
-      <LinearGradient
-        colors={COLORS.primaryGradient}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.header}
-      >
-        <View style={styles.headerContent}>
-          <View>
-            <Text style={styles.headerTitle}>Dashboard</Text>
-            <Text style={styles.headerSubtitle}>Your habit insights</Text>
-          </View>
-          <TouchableOpacity
-            style={styles.headerButton}
-            onPress={() => navigation.navigate('AddHabit')}
-          >
-            <Ionicons name="add" size={24} color={COLORS.textWhite} />
-          </TouchableOpacity>
-        </View>
-      </LinearGradient>
-    </AnimatedView>
-  );
 
   const renderStats = () => (
     <View style={styles.statsContainer}>
@@ -137,7 +119,7 @@ export default function DashboardScreen() {
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Top Performing Habits</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+          <TouchableOpacity onPress={() => navigation.navigate("Home")}>
             <Text style={styles.sectionLink}>View All</Text>
           </TouchableOpacity>
         </View>
@@ -145,31 +127,50 @@ export default function DashboardScreen() {
           <AnimatedView key={habit.id} delay={800 + index * 100}>
             <TouchableOpacity
               style={styles.habitItem}
-              onPress={() =>
-                navigation.navigate('Home', {
-                  screen: 'HabitDetail',
-                  params: { habit },
-                })
-              }
+              onPress={() => {
+                // Navigate to Home tab first to ensure stack is initialized
+                navigation.navigate("Home");
+                // Then navigate to HabitDetail after ensuring tab switch
+                requestAnimationFrame(() => {
+                  navigation.navigate("Home", {
+                    screen: "HabitDetail",
+                    params: { habit },
+                  });
+                });
+              }}
             >
               <View style={styles.habitRank}>
                 <Text style={styles.habitRankText}>#{index + 1}</Text>
               </View>
-              <View style={[styles.habitColor, { backgroundColor: habit.color }]} />
+              <View
+                style={[styles.habitColor, { backgroundColor: habit.color }]}
+              />
               <View style={styles.habitInfo}>
                 <Text style={styles.habitName}>{habit.name}</Text>
                 <View style={styles.habitStats}>
                   <View style={styles.habitStatItem}>
                     <Ionicons name="flame" size={14} color={COLORS.warning} />
-                    <Text style={styles.habitStatText}>{habit.streak} days</Text>
+                    <Text style={styles.habitStatText}>
+                      {habit.streak} days
+                    </Text>
                   </View>
                   <View style={styles.habitStatItem}>
-                    <Ionicons name="images" size={14} color={COLORS.chart.primary} />
-                    <Text style={styles.habitStatText}>{habit.totalEntries} entries</Text>
+                    <Ionicons
+                      name="images"
+                      size={14}
+                      color={COLORS.chart.primary}
+                    />
+                    <Text style={styles.habitStatText}>
+                      {habit.totalEntries} entries
+                    </Text>
                   </View>
                 </View>
               </View>
-              <Ionicons name="chevron-forward" size={20} color={COLORS.textTertiary} />
+              <Ionicons
+                name="chevron-forward"
+                size={20}
+                color={COLORS.textTertiary}
+              />
             </TouchableOpacity>
           </AnimatedView>
         ))}
@@ -178,14 +179,23 @@ export default function DashboardScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      {renderHeader()}
+    <View style={styles.container}>
+      <GradientHeader
+        title="Dashboard"
+        subtitle="Your habit insights"
+        rightButtonIcon="add"
+        onRightButtonPress={() => navigation.navigate("AddHabit")}
+      />
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={loading} onRefresh={refresh} tintColor={COLORS.primary} />
+          <RefreshControl
+            refreshing={loading}
+            onRefresh={refresh}
+            tintColor={COLORS.primary}
+          />
         }
       >
         {stats && renderStats()}
@@ -195,12 +205,17 @@ export default function DashboardScreen() {
           <AnimatedView delay={450}>
             <DashboardAICard
               aiInsights={aiInsights}
-              onHabitPress={(habit) =>
-                navigation.navigate("Home", {
-                  screen: "HabitDetail",
-                  params: { habit },
-                })
-              }
+              onHabitPress={(habit) => {
+                // Navigate to Home tab first to ensure stack is initialized
+                navigation.navigate("Home");
+                // Then navigate to HabitDetail after ensuring tab switch
+                requestAnimationFrame(() => {
+                  navigation.navigate("Home", {
+                    screen: "HabitDetail",
+                    params: { habit },
+                  });
+                });
+              }}
             />
           </AnimatedView>
         )}
@@ -247,169 +262,142 @@ export default function DashboardScreen() {
 
         <View style={styles.bottomSpacer} />
       </ScrollView>
-    </SafeAreaView>
+      <SafeAreaView edges={["bottom"]} />
+    </View>
   );
 }
 
-const createStyles = (COLORS) => StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  header: {
-    paddingTop: SPACING.md,
-    paddingBottom: SPACING.xl,
-    paddingHorizontal: SPACING.lg,
-    ...SHADOWS.md,
-  },
-  headerContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  headerTitle: {
-    ...TYPOGRAPHY.h2,
-    color: COLORS.textWhite,
-    marginBottom: SPACING.xs,
-  },
-  headerSubtitle: {
-    ...TYPOGRAPHY.bodySmall,
-    color: COLORS.textWhite,
-    opacity: 0.9,
-  },
-  headerButton: {
-    width: 44,
-    height: 44,
-    borderRadius: BORDER_RADIUS.round,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: SPACING.lg,
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginHorizontal: -SPACING.xs,
-    marginBottom: SPACING.lg,
-    justifyContent: 'space-between',
-  },
-  statCard: {
-    width: '48%',
-    minWidth: '48%',
-    marginBottom: SPACING.md,
-  },
-  section: {
-    marginBottom: SPACING.xl,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: SPACING.md,
-  },
-  sectionTitle: {
-    ...TYPOGRAPHY.h4,
-    color: COLORS.textPrimary,
-    marginBottom: SPACING.md,
-  },
-  sectionLink: {
-    ...TYPOGRAPHY.bodyMedium,
-    color: COLORS.primary,
-  },
-  chartCard: {
-    backgroundColor: COLORS.surface,
-    borderRadius: BORDER_RADIUS.xl,
-    padding: SPACING.md,
-    ...SHADOWS.sm,
-  },
-  insightCard: {
-    backgroundColor: COLORS.surface,
-    borderRadius: BORDER_RADIUS.xl,
-    padding: SPACING.lg,
-    marginBottom: SPACING.xl,
-    ...SHADOWS.sm,
-  },
-  insightHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: SPACING.md,
-  },
-  insightTitle: {
-    ...TYPOGRAPHY.h5,
-    color: COLORS.textPrimary,
-    marginLeft: SPACING.sm,
-  },
-  insightContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  insightItem: {
-    alignItems: 'center',
-  },
-  insightLabel: {
-    ...TYPOGRAPHY.bodySmall,
-    color: COLORS.textSecondary,
-    marginBottom: SPACING.xs,
-  },
-  insightValue: {
-    ...TYPOGRAPHY.h4,
-    color: COLORS.textPrimary,
-  },
-  habitItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: COLORS.surface,
-    borderRadius: BORDER_RADIUS.lg,
-    padding: SPACING.md,
-    marginBottom: SPACING.sm,
-    ...SHADOWS.sm,
-  },
-  habitRank: {
-    width: 32,
-    height: 32,
-    borderRadius: BORDER_RADIUS.md,
-    backgroundColor: COLORS.backgroundSecondary,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: SPACING.md,
-  },
-  habitRankText: {
-    ...TYPOGRAPHY.captionBold,
-    color: COLORS.textSecondary,
-  },
-  habitColor: {
-    width: 40,
-    height: 40,
-    borderRadius: BORDER_RADIUS.md,
-    marginRight: SPACING.md,
-  },
-  habitInfo: {
-    flex: 1,
-  },
-  habitName: {
-    ...TYPOGRAPHY.bodyMedium,
-    color: COLORS.textPrimary,
-    marginBottom: SPACING.xs,
-  },
-  habitStats: {
-    flexDirection: 'row',
-  },
-  habitStatItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginRight: SPACING.md,
-  },
-  habitStatText: {
-    ...TYPOGRAPHY.caption,
-    color: COLORS.textSecondary,
-    marginLeft: 4,
-  },
-  bottomSpacer: {
-    height: SPACING.xxxl,
-  },
-});
+const createStyles = (COLORS) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: COLORS.background,
+    },
+    scrollView: {
+      flex: 1,
+    },
+    scrollContent: {
+      padding: SPACING.lg,
+    },
+    statsContainer: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      marginHorizontal: -SPACING.xs,
+      marginBottom: SPACING.lg,
+      justifyContent: "space-between",
+    },
+    statCard: {
+      width: "48%",
+      minWidth: "48%",
+      marginBottom: SPACING.md,
+    },
+    section: {
+      marginBottom: SPACING.xl,
+    },
+    sectionHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: SPACING.md,
+    },
+    sectionTitle: {
+      ...TYPOGRAPHY.h4,
+      color: COLORS.textPrimary,
+      marginBottom: SPACING.md,
+    },
+    sectionLink: {
+      ...TYPOGRAPHY.bodyMedium,
+      color: COLORS.primary,
+    },
+    chartCard: {
+      backgroundColor: COLORS.surface,
+      borderRadius: BORDER_RADIUS.xl,
+      padding: SPACING.md,
+      ...SHADOWS.sm,
+    },
+    insightCard: {
+      backgroundColor: COLORS.surface,
+      borderRadius: BORDER_RADIUS.xl,
+      padding: SPACING.lg,
+      marginBottom: SPACING.xl,
+      ...SHADOWS.sm,
+    },
+    insightHeader: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginBottom: SPACING.md,
+    },
+    insightTitle: {
+      ...TYPOGRAPHY.h5,
+      color: COLORS.textPrimary,
+      marginLeft: SPACING.sm,
+    },
+    insightContent: {
+      flexDirection: "row",
+      justifyContent: "space-around",
+    },
+    insightItem: {
+      alignItems: "center",
+    },
+    insightLabel: {
+      ...TYPOGRAPHY.bodySmall,
+      color: COLORS.textSecondary,
+      marginBottom: SPACING.xs,
+    },
+    insightValue: {
+      ...TYPOGRAPHY.h4,
+      color: COLORS.textPrimary,
+    },
+    habitItem: {
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: COLORS.surface,
+      borderRadius: BORDER_RADIUS.lg,
+      padding: SPACING.md,
+      marginBottom: SPACING.sm,
+      ...SHADOWS.sm,
+    },
+    habitRank: {
+      width: 32,
+      height: 32,
+      borderRadius: BORDER_RADIUS.md,
+      backgroundColor: COLORS.backgroundSecondary,
+      justifyContent: "center",
+      alignItems: "center",
+      marginRight: SPACING.md,
+    },
+    habitRankText: {
+      ...TYPOGRAPHY.captionBold,
+      color: COLORS.textSecondary,
+    },
+    habitColor: {
+      width: 40,
+      height: 40,
+      borderRadius: BORDER_RADIUS.md,
+      marginRight: SPACING.md,
+    },
+    habitInfo: {
+      flex: 1,
+    },
+    habitName: {
+      ...TYPOGRAPHY.bodyMedium,
+      color: COLORS.textPrimary,
+      marginBottom: SPACING.xs,
+    },
+    habitStats: {
+      flexDirection: "row",
+    },
+    habitStatItem: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginRight: SPACING.md,
+    },
+    habitStatText: {
+      ...TYPOGRAPHY.caption,
+      color: COLORS.textSecondary,
+      marginLeft: 4,
+    },
+    bottomSpacer: {
+      height: SPACING.xxxl,
+    },
+  });

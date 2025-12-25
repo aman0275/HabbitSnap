@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
   StyleSheet,
@@ -18,6 +18,7 @@ import Input from "../components/Input";
 import ColorPicker from "../components/ColorPicker";
 import Button from "../components/Button";
 import HabitSuggestionsList from "../components/HabitSuggestionsList";
+import GradientHeader from "../components/GradientHeader";
 import { useColors } from "../utils/colors";
 import { SPACING, BORDER_RADIUS, SHADOWS } from "../constants/theme";
 
@@ -110,15 +111,27 @@ export default function AddHabitScreen() {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
-      <ScrollView
+    <View style={styles.container}>
+      <GradientHeader
+        title={isEditing ? "Edit Habit" : "New Habit"}
+        subtitle={
+          isEditing
+            ? "Update your habit details"
+            : "Create a new habit to track"
+        }
+        rightButtonIcon="close"
+        onRightButtonPress={() => navigation.goBack()}
+      />
+      <KeyboardAvoidingView
         style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={0}
       >
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
         {/* Show suggestions only when creating new habit, not editing */}
         {!isEditing && showSuggestions && (
           <HabitSuggestionsList
@@ -163,7 +176,8 @@ export default function AddHabitScreen() {
           colors={[selectedColor, selectedColor]}
           style={styles.saveButton}
         />
-      </ScrollView>
-    </KeyboardAvoidingView>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </View>
   );
 }

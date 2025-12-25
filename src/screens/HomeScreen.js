@@ -88,7 +88,7 @@ export default function HomeScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.container} edges={["bottom", "left", "right"]}>
+    <View style={styles.container}>
       {habits.length > 0 && renderHeader()}
       {habits.length === 0 ? (
         <View style={styles.emptyContainer}>
@@ -113,7 +113,8 @@ export default function HomeScreen() {
           />
         </>
       )}
-    </SafeAreaView>
+      <SafeAreaView edges={["bottom"]} />
+    </View>
   );
 }
 
@@ -124,7 +125,6 @@ const createStyles = (COLORS, insets) =>
       backgroundColor: COLORS.background,
     },
     header: {
-      marginTop: -insets.top,
       paddingTop: insets.top + SPACING.xl,
       paddingBottom: SPACING.xl,
       paddingHorizontal: SPACING.lg,

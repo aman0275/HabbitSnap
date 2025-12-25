@@ -11,6 +11,7 @@ export { default as EmptyState } from './EmptyState';
 export { default as ColorPicker } from './ColorPicker';
 export { default as FloatingActionButton } from './FloatingActionButton';
 export { default as HabitHeader } from './HabitHeader';
+export { default as GradientHeader } from './GradientHeader';
 export { default as PhotoGridItem } from './PhotoGridItem';
 export { default as AICategoryBadge } from './AICategoryBadge';
 export { default as AIInsightsCard } from './AIInsightsCard';

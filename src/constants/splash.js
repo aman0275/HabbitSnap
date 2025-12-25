@@ -4,7 +4,7 @@
  */
 export const SPLASH_CONFIG = {
   // Timing constants
-  DISPLAY_DURATION: 3000, // Total time splash screen is visible (ms)
+  DISPLAY_DURATION: 2100, // Total time splash screen is visible (ms) - 2.1 seconds
   FADE_OUT_DURATION: 300, // Time for fade out animation (ms)
   
   // Animation delays (ms)
